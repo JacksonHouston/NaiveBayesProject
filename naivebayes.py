@@ -1,15 +1,20 @@
 import dataset
 
 D = dataset.Dataset("mushroom-training.data")
-#print("Attributes in the data set are: ", D.attributes.keys())
 
-#selectionCriteria = {"cap-shape":"b", "class":"p"}
-#print("There are", len(D.instances), "instances in total")
-#print("There are", len(D.selectSubset(selectionCriteria)), \  " poisonous examples with a bell-shaped cap")
-
-totalEdible = {"class":"e"}
-print("There are", len(D.selectSubset(totalEdible)), "edible mushrooms")
-totalPoisonous = {"class":"p"}
-print("There are", len(D.selectSubset(totalPoisonous)), "poisonous mushrooms")
-selection = {"class":"e", "cap-shape":"b", "gill-size":"b"}
-print("There are", len(D.selectSubset(selection)), "edible mushrooms with bell-shaped caps and narrow gills")
+totalMushrooms = len(D.instances)
+totalEdible = len(D.selectSubset({"class":"e"}))
+totalPoisonous = len(D.selectSubset({"class":"p"}))
+#print((totalEdible/totalMushrooms)*100, "'%' are edilbe")
+habitat = ["d","g","m","l","p","u","w"]
+classes = ["p","e"]
+totalHabEd=0
+totalHadPo=0
+for h in habitat:
+    for c in classes:
+        selectionCriteria = {"habitat":h, "class":c}
+        print("There are", len(D.selectSubset(selectionCriteria)), c ," examples in habitat" , h)
+        if c == "e":
+            totalHabEd += len(D.selectSubset(selectionCriteria))
+        else:
+            totalHadPo += len(D.selectSubset(selectionCriteria))
