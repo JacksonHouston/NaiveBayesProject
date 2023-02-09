@@ -1,26 +1,4 @@
 import dataset
-class Data:
-    def __init__(self):
-        self.self = self.Attribute()
-    class Attribute:
-        def __init__(self, name, value):
-            self.name = ""
-            self.value = self.Values()
-
-        def show(self):
-            print(self.name)
-        
-        class Values:
-            def __init__(self, edible, poisonous, p):
-                self.edible = 0
-                self.poisonous = 0
-                self.p = 0
-            
-            def display(self):
-                print(self.edible)
-                print(self.poisonous)
-                print(self.p)
-
 
 D = dataset.Dataset("mushroom-training.data")
 
@@ -48,10 +26,6 @@ for key in keys:
         # print("Edible", len(D.selectSubset({"class":"e", key:item}))) #number of edible per item per key
         # print("Poisonous",len(D.selectSubset({"class":"p", key:item}))) #number of poisonous per item per key
         # print("p", 1/len(D.getAttributeValues(key))) #p 1/number of types of attributes per key (Prior probability of particular value)
-print(trainData['habitat']['l'])
-
-for i in attributeList:
-    print(i)
 
 def getFract(numItem, numTotal, m, p):
     top = numItem + (m * p)
