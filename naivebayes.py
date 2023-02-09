@@ -5,6 +5,9 @@ D = dataset.Dataset("mushroom-training.data")
 totalMushrooms = len(D.instances) #get total number of mushrooms
 totalEdible = len(D.selectSubset({"class":"e"})) #get total number of edible mushrooms
 totalPoisonous = len(D.selectSubset({"class":"p"})) #get total number of poisonous mushrooms
+percentEdible = totalEdible/totalMushrooms
+percentPoisonous = totalPoisonous/totalMushrooms
+
 m = 0 #virutal Sampling varible for testing
 # 
 #  Get all the attributes and their values and store them inside nested dictionaries
@@ -41,3 +44,21 @@ def inductionTable(numItem, numTotal, m, p): # plug data into formula to calcula
     return top/bottom
 
 getInductionTable() # call function to get induction data
+
+def normalize(pos, neg):
+    return pos / (pos + neg)
+
+D2 =dataset.Dataset("mushroom-testing.data")
+
+lines = len(D2.instances)
+for line in range(lines):
+    edibleProduct =1
+    poisonousProduct=1
+    for key in keys:
+        value = D2.getInstanceValue(key, line)
+        edibleProduct *= inductionData[key][value]['edible']
+        poisonousProduct *= inductionData[key][value]['poisonous']
+    edibleProduct *= percentEdible
+    poisonousProduct *= percentPoisonous
+    norm = normalize(edibleProduct, poisonousProduct)
+    print("line no: ", line , "normalized: ", norm)    
