@@ -1,7 +1,7 @@
 import dataset
 
 D1 = dataset.Dataset("mushroom-training.data")
-D2 =dataset.Dataset("mushroom-testing.data")
+D2 = dataset.Dataset("mushroom-testing.data")
 
 totalMushrooms = len(D1.instances) #get total number of mushrooms
 totalEdible = len(D1.selectSubset({"class":"e"})) #get total number of edible mushrooms
@@ -9,7 +9,6 @@ totalPoisonous = len(D1.selectSubset({"class":"p"})) #get total number of poison
 percentEdible = totalEdible/totalMushrooms
 percentPoisonous = totalPoisonous/totalMushrooms
 
-m = 0 #virutal Sampling varible for testing
 # 
 #  Get all the attributes and their values and store them inside nested dictionaries
 # 
@@ -23,13 +22,10 @@ for key in keys:
             "Poisonous" : len(D1.selectSubset({"class":"p", key:item})),#number of poisonous per item per key
             "p" : 1/len(D1.getAttributeValues(key)) #p 1/number of types of attributes per key (Prior probability of particular value)
         }
-#print(trainData['habitat']['l']['Edible']) #example of how to access data within dictionary
-
 # 
 #  Now we need the induction for the data we acquired in the section above.
 # 
 inductionData = {}
-
 def getInductionTable(m): # iterate through the trainData dictionary on each nested dictionary to access all attributes and their values
     for key in trainData:
         inductionData[key] = {}
@@ -38,25 +34,26 @@ def getInductionTable(m): # iterate through the trainData dictionary on each nes
                 "edible" : inductionTable(trainData[key][item]['Edible'],totalEdible, m, trainData[key][item]['p']), #sent data to function to compute the naive bayes fraction
                 "poisonous" : inductionTable(trainData[key][item]['Poisonous'],totalPoisonous, m, trainData[key][item]['p'])
             }
-            
-def inductionTable(numItem, numTotal, m, p): # plug data into formula to calculate their probabilty
-    top = numItem + (m * p)
-    bottom = numTotal + m
+    ## manually update these values to be correct...
+    inductionData["class"]["e"]["edible"] = percentEdible
+    inductionData["class"]["e"]["poisonous"] = percentPoisonous
+    inductionData["class"]["p"]["edible"] = percentEdible
+    inductionData["class"]["p"]["poisonous"] = percentPoisonous
+    print("Classification Accuracy for training data: ") 
+    inference(D1)
+    print("Classification Accuracy for testing data: ") 
+    inference(D2)            
+# plug data into formula to calculate their probabilty
+def inductionTable(numItem, numTotal, m, p): 
+    top = (numItem + (m * p))
+    bottom = (numTotal + m)
     return top/bottom
-
-getInductionTable(m) # call function to get induction data
-## manually update these values to be correct...
-inductionData["class"]["e"]["edible"] = percentEdible
-inductionData["class"]["e"]["poisonous"] = percentPoisonous
-inductionData["class"]["p"]["edible"] = percentEdible
-inductionData["class"]["p"]["poisonous"] = percentPoisonous
-
 #function to normalize data 
 def normalize(pos, neg):
     return pos / (pos + neg)
-
+#get length of testing data set
 def inference(data):
-    lines = len(data.instances) #get length of testing data set
+    lines = len(data.instances) 
     accurateCase = 0
     for line in range(lines):
         edibleProduct =0        
@@ -80,11 +77,12 @@ def inference(data):
                 result = "p"
         if result == data.getInstanceValue("class", line):
                 accurateCase += 1
-    print("Number of Accuarte classifications: ", accurateCase)
-    print("Number of total cases tested: ", lines)
-    print("Accuracy level: ", accurateCase/lines)
-
-print("Accuracy info for training data: ") 
-inference(D1)
-print("Accuracy info for testing data: ") 
-inference(D2)
+    print((accurateCase/lines)*100,"%")
+print("+++ M = 0 +++")
+getInductionTable(0) # call function to get induction data
+print("\n\n\n+++ M = 1 +++")
+getInductionTable(1) # call function to get induction data
+print("\n\n\n+++ M = 5 +++")
+getInductionTable(5) # call function to get induction data
+print("\n\n\n+++ M = 1000 +++")
+getInductionTable(1000) # call function to get induction data
