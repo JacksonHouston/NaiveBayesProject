@@ -68,7 +68,7 @@ def inference(data):
                 poisonousProduct = inductionData[key][value]['poisonous'] #if first time reading data set it equal
             else:
                 poisonousProduct *= inductionData[key][value]['poisonous'] # multiply the all the probabilities of all the attributes together
-            norm = normalize(edibleProduct, poisonousProduct) #normalize for edible
+        norm = normalize(edibleProduct, poisonousProduct) #normalize for edible
         if norm > 0.5:
             result = "e"
         else:
@@ -80,7 +80,7 @@ print("+++ M = 0 +++")
 getInductionTable(0) # call function to get induction data
 print("\n\n\n+++ M = 1 +++")
 getInductionTable(1) # call function to get induction data
-print("\n\n\n+++ M = 5 +++")
-getInductionTable(5) # call function to get induction data
-print("\n\n\n+++ M = 1000 +++")
-getInductionTable(1000) # call function to get induction data
+# print("\n\n\n+++ M = 5 +++")
+# getInductionTable(5) # call function to get induction data
+# print("\n\n\n+++ M = 1000 +++")
+# getInductionTable(1000) # call function to get induction data
