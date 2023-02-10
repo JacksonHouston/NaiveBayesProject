@@ -30,7 +30,7 @@ for key in keys:
 # 
 inductionData = {}
 
-def getInductionTable(): # iterate through the trainData dictionary on each nested dictionary to access all attributes and their values
+def getInductionTable(m): # iterate through the trainData dictionary on each nested dictionary to access all attributes and their values
     for key in trainData:
         inductionData[key] = {}
         for item in trainData[key]:
@@ -44,7 +44,12 @@ def inductionTable(numItem, numTotal, m, p): # plug data into formula to calcula
     bottom = numTotal + m
     return top/bottom
 
-getInductionTable() # call function to get induction data
+getInductionTable(m) # call function to get induction data
+## manually update these values to be correct...
+inductionData["class"]["e"]["edible"] = percentEdible
+inductionData["class"]["e"]["poisonous"] = percentPoisonous
+inductionData["class"]["p"]["edible"] = percentEdible
+inductionData["class"]["p"]["poisonous"] = percentPoisonous
 
 #function to normalize data 
 def normalize(pos, neg):
@@ -57,7 +62,7 @@ def inference(data):
         edibleProduct =0        
         poisonousProduct=0
         for key in keys:    
-            value = D2.getInstanceValue(key, line) 
+            value = data.getInstanceValue(key, line) 
             if edibleProduct == 0:
                 edibleProduct = inductionData[key][value]['edible']#if first time reading data set it equal
             else:
@@ -78,5 +83,8 @@ def inference(data):
     print("Number of Accuarte classifications: ", accurateCase)
     print("Number of total cases tested: ", lines)
     print("Accuracy level: ", accurateCase/lines)
+
+print("Accuracy info for training data: ") 
 inference(D1)
-#print("Accuracy info for testing data: ", inference(D2))
+print("Accuracy info for testing data: ") 
+inference(D2)
