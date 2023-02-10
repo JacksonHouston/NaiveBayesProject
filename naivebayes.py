@@ -51,7 +51,7 @@ def inductionTable(numItem, numTotal, m, p):
 #function to normalize data 
 def normalize(pos, neg):
     return pos / (pos + neg)
-#get length of testing data set
+#function that makes and inference on every row of the provided dataset, normalizes them, checks their classification and outputs accuracy
 def inference(data):
     lines = len(data.instances) 
     accurateCase = 0
@@ -68,16 +68,14 @@ def inference(data):
                 poisonousProduct = inductionData[key][value]['poisonous'] #if first time reading data set it equal
             else:
                 poisonousProduct *= inductionData[key][value]['poisonous'] # multiply the all the probabilities of all the attributes together
-            edibleProduct *= percentEdible # multiply by the probability of it being edible
-            poisonousProduct *= percentPoisonous # multiply by the probability of it being poisonous
             norm = normalize(edibleProduct, poisonousProduct) #normalize for edible
-            if norm > .50:
-                result = "e"
-            else:
-                result = "p"
+        if norm > 0.5:
+            result = "e"
+        else:
+            result = "p"
         if result == data.getInstanceValue("class", line):
                 accurateCase += 1
-    print((accurateCase/lines)*100,"%")
+    print(str(accurateCase/lines*100)+"%")
 print("+++ M = 0 +++")
 getInductionTable(0) # call function to get induction data
 print("\n\n\n+++ M = 1 +++")
