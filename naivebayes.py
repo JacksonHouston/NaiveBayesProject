@@ -1,10 +1,11 @@
 import dataset
 
-D = dataset.Dataset("mushroom-training.data")
+D1 = dataset.Dataset("mushroom-training.data")
+D2 =dataset.Dataset("mushroom-testing.data")
 
-totalMushrooms = len(D.instances) #get total number of mushrooms
-totalEdible = len(D.selectSubset({"class":"e"})) #get total number of edible mushrooms
-totalPoisonous = len(D.selectSubset({"class":"p"})) #get total number of poisonous mushrooms
+totalMushrooms = len(D1.instances) #get total number of mushrooms
+totalEdible = len(D1.selectSubset({"class":"e"})) #get total number of edible mushrooms
+totalPoisonous = len(D1.selectSubset({"class":"p"})) #get total number of poisonous mushrooms
 percentEdible = totalEdible/totalMushrooms
 percentPoisonous = totalPoisonous/totalMushrooms
 
@@ -13,14 +14,14 @@ m = 0 #virutal Sampling varible for testing
 #  Get all the attributes and their values and store them inside nested dictionaries
 # 
 trainData = {}
-keys = D.attributes.keys() #get all the keys for the attributes
+keys = D1.attributes.keys() #get all the keys for the attributes
 for key in keys:
     trainData[key] = {}
-    for item in D.getAttributeValues(key):
+    for item in D1.getAttributeValues(key):
         trainData[key][item] = {
-            "Edible" : len(D.selectSubset({"class":"e", key:item})),#number of edible per item per key
-            "Poisonous" : len(D.selectSubset({"class":"p", key:item})),#number of poisonous per item per key
-            "p" : 1/len(D.getAttributeValues(key)) #p 1/number of types of attributes per key (Prior probability of particular value)
+            "Edible" : len(D1.selectSubset({"class":"e", key:item})),#number of edible per item per key
+            "Poisonous" : len(D1.selectSubset({"class":"p", key:item})),#number of poisonous per item per key
+            "p" : 1/len(D1.getAttributeValues(key)) #p 1/number of types of attributes per key (Prior probability of particular value)
         }
 #print(trainData['habitat']['l']['Edible']) #example of how to access data within dictionary
 
@@ -45,20 +46,37 @@ def inductionTable(numItem, numTotal, m, p): # plug data into formula to calcula
 
 getInductionTable() # call function to get induction data
 
+#function to normalize data 
 def normalize(pos, neg):
     return pos / (pos + neg)
 
-D2 =dataset.Dataset("mushroom-testing.data")
-
-lines = len(D2.instances)
-for line in range(lines):
-    edibleProduct =1
-    poisonousProduct=1
-    for key in keys:
-        value = D2.getInstanceValue(key, line)
-        edibleProduct *= inductionData[key][value]['edible']
-        poisonousProduct *= inductionData[key][value]['poisonous']
-    edibleProduct *= percentEdible
-    poisonousProduct *= percentPoisonous
-    norm = normalize(edibleProduct, poisonousProduct)
-    print("line no: ", line , "normalized: ", norm)    
+def inference(data):
+    lines = len(data.instances) #get length of testing data set
+    accurateCase = 0
+    for line in range(lines):
+        edibleProduct =0        
+        poisonousProduct=0
+        for key in keys:    
+            value = D2.getInstanceValue(key, line) 
+            if edibleProduct == 0:
+                edibleProduct = inductionData[key][value]['edible']#if first time reading data set it equal
+            else:
+                edibleProduct *= inductionData[key][value]['edible']# multiply the all the probabilities of all the attributes together
+            if poisonousProduct == 0:
+                poisonousProduct = inductionData[key][value]['poisonous'] #if first time reading data set it equal
+            else:
+                poisonousProduct *= inductionData[key][value]['poisonous'] # multiply the all the probabilities of all the attributes together
+            edibleProduct *= percentEdible # multiply by the probability of it being edible
+            poisonousProduct *= percentPoisonous # multiply by the probability of it being poisonous
+            norm = normalize(edibleProduct, poisonousProduct) #normalize for edible
+            if norm > .50:
+                result = "e"
+            else:
+                result = "p"
+        if result == data.getInstanceValue("class", line):
+                accurateCase += 1
+    print("Number of Accuarte classifications: ", accurateCase)
+    print("Number of total cases tested: ", lines)
+    print("Accuracy level: ", accurateCase/lines)
+inference(D1)
+#print("Accuracy info for testing data: ", inference(D2))
