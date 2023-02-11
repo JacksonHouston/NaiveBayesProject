@@ -80,7 +80,7 @@ print("+++ M = 0 +++")
 getInductionTable(0) # call function to get induction data
 print("\n\n\n+++ M = 1 +++")
 getInductionTable(1) # call function to get induction data
-# print("\n\n\n+++ M = 5 +++")
-# getInductionTable(5) # call function to get induction data
-# print("\n\n\n+++ M = 1000 +++")
-# getInductionTable(1000) # call function to get induction data
+print("\n\n\n+++ M = 5 +++")
+getInductionTable(5) # call function to get induction data
+print("\n\n\n+++ M = 1000 +++")
+getInductionTable(1000) # call function to get induction data
