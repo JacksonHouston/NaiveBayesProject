@@ -36,10 +36,10 @@ def getInductionTable(m): # pass the m (virtual sample)
                 "poisonous" : inductionTable(trainData[key][item]['Poisonous'],totalPoisonous, m, trainData[key][item]['p'])
             }
     ## manually update these values to be correct...
-    inductionData["class"]["e"]["edible"] = percentEdible
-    inductionData["class"]["e"]["poisonous"] = percentPoisonous
-    inductionData["class"]["p"]["edible"] = percentEdible
-    inductionData["class"]["p"]["poisonous"] = percentPoisonous
+    inductionData["class"]["e"]["edible"] = inductionTable(totalEdible, totalMushrooms, m, .5)
+    inductionData["class"]["e"]["poisonous"] = inductionTable(totalPoisonous, totalMushrooms, m, .5)
+    inductionData["class"]["p"]["edible"] = inductionTable(totalEdible, totalMushrooms, m, .5)
+    inductionData["class"]["p"]["poisonous"] = inductionTable(totalPoisonous, totalMushrooms, m, .5)
     print("Classification Accuracy for training data: ") # call the function and print 
     inference(D1)
     print("Classification Accuracy for testing data: ") #call the function and print
@@ -54,7 +54,6 @@ def normalize(x, y): #function to normalize data
     return x / (x + y)
 
 def inference(data): #function that makes and inference on every row of the provided dataset, normalizes them, checks their classification and outputs accuracy
-    # numEd = 0 #used for debugging
     lines = len(data.instances) # get number of rows/lines in the current dataset
     accurateCase = 0 #track number of accurate cases
     for line in range(lines): #loop through the "length" of the lines variable 
@@ -65,19 +64,16 @@ def inference(data): #function that makes and inference on every row of the prov
             edibleProduct *= inductionData[key][value]['edible']# multiply the all the probabilities of all the attributes together
             poisonousProduct *= inductionData[key][value]['poisonous'] # multiply the all the probabilities of all the attributes together
         norm = normalize(edibleProduct, poisonousProduct) #normalize for edible
-        #print(norm)
         if norm > 0.5: # if normalize returns a value greater than 0.50 than we assume it is edible. else, assume poisonous
             result = "e"
-            # numEd += 1
         else:
             result = "p"
         if result == data.getInstanceValue("class", line): # compare the result computed in the if-statement above to the 'class' value at the line we're looking at in the loop
                 accurateCase += 1 #if they match increment the number of accurate cases by one
-                # print("Accurate at:", line)
     print(str(accurateCase/lines*100)+"%") # calculate the percent of accurate cases and print that
-    # print("Number Edible: ", numEd)
-    # print("Accurate Cases: ", accurateCase)
-    # print("Number of lines: ", lines)
+#
+# output
+#
 print("+++ M = 0 +++")
 getInductionTable(0) # call function to get induction data
 print("\n\n\n+++ M = 1 +++")
