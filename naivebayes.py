@@ -70,7 +70,7 @@ def inference(data): #function that makes and inference on every row of the prov
             result = "p"
         if result == data.getInstanceValue("class", line): # compare the result computed in the if-statement above to the 'class' value at the line we're looking at in the loop
                 accurateCase += 1 #if they match increment the number of accurate cases by one
-    print(str(accurateCase/lines*100)+"%") # calculate the percent of accurate cases and print that
+    print(str((accurateCase/lines)*100)+"%") # calculate the percent of accurate cases and print that
 #
 # output
 #
