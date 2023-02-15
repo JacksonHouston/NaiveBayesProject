@@ -49,33 +49,34 @@ def inductionTable(numItem, numTotal, m, p):
     bottom = (numTotal + m)
     return top/bottom
 #function to normalize data 
-def normalize(pos, neg):
-    return pos / (pos + neg)
+def normalize(x, y):
+    return x / (x + y)
 #function that makes and inference on every row of the provided dataset, normalizes them, checks their classification and outputs accuracy
 def inference(data):
-    lines = len(data.instances) 
-    accurateCase = 0
+    # numEd = 0 #used for debugging
+    lines = len(data.instances) # get number of rows/lines in the current dataset
+    accurateCase = 0 #track number of accurate cases
     for line in range(lines):
-        edibleProduct =0        
-        poisonousProduct=0
+        edibleProduct =1 #initalize to 1 so it doesnt effect the multiplication       
+        poisonousProduct=1
         for key in keys:    
-            value = data.getInstanceValue(key, line) 
-            if edibleProduct == 0:
-                edibleProduct = inductionData[key][value]['edible']#if first time reading data set it equal
-            else:
-                edibleProduct *= inductionData[key][value]['edible']# multiply the all the probabilities of all the attributes together
-            if poisonousProduct == 0:
-                poisonousProduct = inductionData[key][value]['poisonous'] #if first time reading data set it equal
-            else:
-                poisonousProduct *= inductionData[key][value]['poisonous'] # multiply the all the probabilities of all the attributes together
+            value = data.getInstanceValue(key, line) #get the value you want to pull the probabilities from
+            edibleProduct *= inductionData[key][value]['edible']# multiply the all the probabilities of all the attributes together
+            poisonousProduct *= inductionData[key][value]['poisonous'] # multiply the all the probabilities of all the attributes together
         norm = normalize(edibleProduct, poisonousProduct) #normalize for edible
+        #print(norm)
         if norm > 0.5:
             result = "e"
+            # numEd += 1
         else:
             result = "p"
         if result == data.getInstanceValue("class", line):
                 accurateCase += 1
+                # print("Accurate at:", line)
     print(str(accurateCase/lines*100)+"%")
+    # print("Number Edible: ", numEd)
+    # print("Accurate Cases: ", accurateCase)
+    # print("Number of lines: ", lines)
 print("+++ M = 0 +++")
 getInductionTable(0) # call function to get induction data
 print("\n\n\n+++ M = 1 +++")
