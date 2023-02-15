@@ -25,12 +25,13 @@ for key in keys:
 # 
 #  Now we need the induction for the data we acquired in the section above.
 # 
-inductionData = {}
-def getInductionTable(m): # iterate through the trainData dictionary on each nested dictionary to access all attributes and their values
+inductionData = {} #initalize the induction data dictionary
+# iterate through the trainData dictionary on each nested dictionary to access all attributes and their values
+def getInductionTable(m): # pass the m (virtual sample)
     for key in trainData:
-        inductionData[key] = {}
+        inductionData[key] = {}  # initalize a nested dictonary for each key
         for item in trainData[key]:
-            inductionData[key][item] = {
+            inductionData[key][item] = { # for each item inside the key dictionaries call the function to get the induction data for each
                 "edible" : inductionTable(trainData[key][item]['Edible'],totalEdible, m, trainData[key][item]['p']), #sent data to function to compute the naive bayes fraction
                 "poisonous" : inductionTable(trainData[key][item]['Poisonous'],totalPoisonous, m, trainData[key][item]['p'])
             }
@@ -39,41 +40,41 @@ def getInductionTable(m): # iterate through the trainData dictionary on each nes
     inductionData["class"]["e"]["poisonous"] = percentPoisonous
     inductionData["class"]["p"]["edible"] = percentEdible
     inductionData["class"]["p"]["poisonous"] = percentPoisonous
-    print("Classification Accuracy for training data: ") 
+    print("Classification Accuracy for training data: ") # call the function and print 
     inference(D1)
-    print("Classification Accuracy for testing data: ") 
+    print("Classification Accuracy for testing data: ") #call the function and print
     inference(D2)            
-# plug data into formula to calculate their probabilty
-def inductionTable(numItem, numTotal, m, p): 
+
+def inductionTable(numItem, numTotal, m, p): # plug data into formula to calculate their probabilty
     top = (numItem + (m * p))
     bottom = (numTotal + m)
     return top/bottom
-#function to normalize data 
-def normalize(x, y):
+
+def normalize(x, y): #function to normalize data 
     return x / (x + y)
-#function that makes and inference on every row of the provided dataset, normalizes them, checks their classification and outputs accuracy
-def inference(data):
+
+def inference(data): #function that makes and inference on every row of the provided dataset, normalizes them, checks their classification and outputs accuracy
     # numEd = 0 #used for debugging
     lines = len(data.instances) # get number of rows/lines in the current dataset
     accurateCase = 0 #track number of accurate cases
-    for line in range(lines):
+    for line in range(lines): #loop through the "length" of the lines variable 
         edibleProduct =1 #initalize to 1 so it doesnt effect the multiplication       
         poisonousProduct=1
-        for key in keys:    
+        for key in keys:    # loop through all the key attributes in the dataset (see line 16)
             value = data.getInstanceValue(key, line) #get the value you want to pull the probabilities from
             edibleProduct *= inductionData[key][value]['edible']# multiply the all the probabilities of all the attributes together
             poisonousProduct *= inductionData[key][value]['poisonous'] # multiply the all the probabilities of all the attributes together
         norm = normalize(edibleProduct, poisonousProduct) #normalize for edible
         #print(norm)
-        if norm > 0.5:
+        if norm > 0.5: # if normalize returns a value greater than 0.50 than we assume it is edible. else, assume poisonous
             result = "e"
             # numEd += 1
         else:
             result = "p"
-        if result == data.getInstanceValue("class", line):
-                accurateCase += 1
+        if result == data.getInstanceValue("class", line): # compare the result computed in the if-statement above to the 'class' value at the line we're looking at in the loop
+                accurateCase += 1 #if they match increment the number of accurate cases by one
                 # print("Accurate at:", line)
-    print(str(accurateCase/lines*100)+"%")
+    print(str(accurateCase/lines*100)+"%") # calculate the percent of accurate cases and print that
     # print("Number Edible: ", numEd)
     # print("Accurate Cases: ", accurateCase)
     # print("Number of lines: ", lines)
